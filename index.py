@@ -51,7 +51,9 @@ def read_xl_write_arr(fpath):
     return loopArr
 
 # call the function to get array
-inputfile_path = 'Input/aishe_10.xlsx'
+# inputfile_path = 'Input/' + arg_param + '.xlsx'
+inputfile_path = f"Input/{arg_param}.xlsx"
+
 result = read_xl_write_arr(inputfile_path)
 # print(json.dumps(result, indent=2))
 # exit()
