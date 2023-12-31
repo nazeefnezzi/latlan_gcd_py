@@ -25,18 +25,14 @@ if len(sys.argv) < 2 or not sys.argv[1]:
     sys.exit()
 arg_param = sys.argv[1]
 
-print(arg_param)
-
 # defining a funtion for read excel file and write to an array
 def read_xl_write_arr(fpath):
-    #load excel file
-    exlFile = openpyxl.load_workbook(fpath)
+    
+    exlFile = openpyxl.load_workbook(fpath) #load excel file
     sheet = exlFile.worksheets[0]
-    #get first row for key of each array
-    header = [cell.value for cell in sheet[1]]
-
-    # empty array init
-    loopArr = []
+    header = [cell.value for cell in sheet[1]]  #get first row for key of each array
+    
+    loopArr = [] # empty array init
 
     # itrate through the row from second for data
     for row in sheet.iter_rows(min_row=2, values_only=True):
@@ -45,29 +41,26 @@ def read_xl_write_arr(fpath):
         # add to the main loopArray
         loopArr.append(itemArr)
 
-    # close the open file
-    exlFile.close()
+    exlFile.close() # close the open file
 
     return loopArr
 
-# call the function to get array
+
 # inputfile_path = 'Input/' + arg_param + '.xlsx'
 inputfile_path = f"Input/{arg_param}.xlsx"
 
-result = read_xl_write_arr(inputfile_path)
+result = read_xl_write_arr(inputfile_path) # call the function to get input array
 # print(json.dumps(result, indent=2))
 # exit()
 
 
 # api call function
-
 def geoc_api_call(url, baseUrl, API_key):
     call_url = f"{baseUrl}{url}{API_key}"
 
     response = requests.get(call_url)
     if(response.status_code == 200):
         res_data = response.json()
-        # print(res_data['results'][0]['geometry']['location']['lat'])
         eliminated_array = {
             'latitude': res_data['results'][0]['geometry']['location']['lat'] if res_data['results'] and res_data['results'][0] and 'geometry' in res_data['results'][0] and 'location' in res_data['results'][0]['geometry'] else None ,
             'longitude': res_data['results'][0]['geometry']['location']['lng'] if res_data['results'] and res_data['results'][0] and 'geometry' in res_data['results'][0] and 'location' in res_data['results'][0]['geometry'] else None
@@ -77,9 +70,7 @@ def geoc_api_call(url, baseUrl, API_key):
 
     return None 
 
-# Creating target array
-
-api_call_array = [] # init api_call_array
+# Creating target array. this array is the final array [id, name, pin_code, statename, lat, long]
 final_array = [] # init final_array
 for item in result:
 
@@ -93,11 +84,11 @@ for item in result:
     # print( quote(full_address) )
     url = quote(full_address) # encode the url
 
-    latlong_info = geoc_api_call(url, baseUrl, API_key)
+    latlong_info = geoc_api_call(url, baseUrl, API_key) # call api function 
     # if latlong_info is not None:
     #     item.update(latlong_info)
-    item.update(latlong_info)
-    final_array.append(item)
+    item.update(latlong_info) # add to final array
+    final_array.append(item) # append each data set
 
     
 # print(json.dumps(final_array, indent=2))
@@ -110,6 +101,7 @@ print('generating output')
 
 csv_header = list(final_array[0].keys())
 outputPath = 'csv/output.csv'
+outputPath = f"csv/{arg_param}.csv"
 
 # Define csvGenerate function
 
